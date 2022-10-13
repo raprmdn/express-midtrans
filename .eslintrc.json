@@ -1,0 +1,25 @@
+{
+    "env": {
+        "browser": true,
+        "commonjs": true,
+        "es2021": true
+    },
+    "extends": [
+        "airbnb-base",
+        "eslint:recommended"
+    ],
+    "overrides": [
+    ],
+    "parserOptions": {
+        "ecmaVersion": "latest"
+    },
+    "rules": {
+        "indent": ["warn", 4],
+        "semi": ["warn", "always"],
+        "no-console": "off",
+        "consistent-return": ["warn", { "treatUndefinedAsUnspecified": true }],
+        "no-throw-literal": "off",
+        "linebreak-style": 0,
+        "no-return-await": "warn"
+    }
+}
