@@ -1,33 +1,38 @@
 module.exports = {
     async up(queryInterface, Sequelize) {
-        await queryInterface.createTable('Users', {
+        await queryInterface.createTable('Videos', {
             id: {
                 allowNull: false,
                 autoIncrement: true,
                 primaryKey: true,
                 type: Sequelize.INTEGER,
             },
-            name: {
-                type: Sequelize.STRING,
+            series_id: {
+                type: Sequelize.INTEGER,
                 allowNull: false,
-                maxLength: 255,
+                references: {
+                    model: 'Series',
+                    key: 'id',
+                    as: 'series_id',
+                },
             },
-            username: {
+            title: {
                 type: Sequelize.STRING,
                 allowNull: false,
-                maxLength: 255,
-                unique: true,
             },
-            email: {
+            source: {
                 type: Sequelize.STRING,
-                allowNull: false,
-                maxLength: 255,
-                unique: true,
             },
-            password: {
+            episode: {
+                type: Sequelize.INTEGER,
+            },
+            runtime: {
                 type: Sequelize.STRING,
+            },
+            is_free: {
+                type: Sequelize.BOOLEAN,
                 allowNull: false,
-                maxLength: 255,
+                defaultValue: true,
             },
             created_at: {
                 allowNull: false,
@@ -40,6 +45,6 @@ module.exports = {
         });
     },
     async down(queryInterface, Sequelize) {
-        await queryInterface.dropTable('Users');
+        await queryInterface.dropTable('Videos');
     },
 };
