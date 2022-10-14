@@ -28,7 +28,7 @@ module.exports = {
         const result = {};
         result.code = StatusCodes.NOT_FOUND;
         result.status = 'NOT_FOUND';
-        result.message = `${message} not found`;
+        result.message = `${message ? `${message} not found` : 'Resource not found'}`;
 
         return result;
     },
@@ -36,7 +36,7 @@ module.exports = {
         const result = {};
         result.code = StatusCodes.UNAUTHORIZED;
         result.status = 'UNAUTHORIZED';
-        result.message = `Unauthorized. ${message}`;
+        result.message = `Unauthorized.${message ? ` ${message}` : ''}`;
 
         return result;
     },
