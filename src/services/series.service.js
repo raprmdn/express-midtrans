@@ -11,7 +11,7 @@ module.exports = {
                 include: [
                     {
                         association: 'videos',
-                        attributes: { exclude: ['created_at', 'updated_at'] },
+                        attributes: ['id', 'series_id', 'runtime'],
                     },
                 ],
                 order: [['id', 'DESC']],
