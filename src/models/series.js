@@ -1,6 +1,7 @@
 const {
     Model,
 } = require('sequelize');
+const moment = require('moment');
 
 module.exports = (sequelize, DataTypes) => {
     class Series extends Model {
@@ -63,6 +64,11 @@ module.exports = (sequelize, DataTypes) => {
         sequelize,
         modelName: 'Series',
         underscored: true,
+        getterMethods: {
+            created_at() {
+                return moment(this.getDataValue('created_at')).format('DD MMMM YYYY, HH:mm A');
+            },
+        },
     });
     return Series;
 };

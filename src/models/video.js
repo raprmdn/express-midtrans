@@ -1,6 +1,7 @@
 const {
     Model,
 } = require('sequelize');
+const moment = require('moment/moment');
 
 module.exports = (sequelize, DataTypes) => {
     class Video extends Model {
@@ -50,6 +51,11 @@ module.exports = (sequelize, DataTypes) => {
         sequelize,
         modelName: 'Video',
         underscored: true,
+        getterMethods: {
+            created_at() {
+                return moment(this.getDataValue('created_at')).format('DD MMMM YYYY, HH:mm A');
+            },
+        },
     });
     return Video;
 };
