@@ -1,11 +1,19 @@
 module.exports = {
     async up(queryInterface, Sequelize) {
-        await queryInterface.createTable('Videos', {
+        await queryInterface.createTable('Carts', {
             id: {
                 allowNull: false,
                 autoIncrement: true,
                 primaryKey: true,
                 type: Sequelize.INTEGER,
+            },
+            user_id: {
+                type: Sequelize.INTEGER,
+                allowNull: false,
+                references: {
+                    model: 'Users',
+                    key: 'id',
+                },
             },
             series_id: {
                 type: Sequelize.INTEGER,
@@ -14,24 +22,6 @@ module.exports = {
                     model: 'Series',
                     key: 'id',
                 },
-            },
-            title: {
-                type: Sequelize.STRING,
-                allowNull: false,
-            },
-            source: {
-                type: Sequelize.STRING,
-            },
-            episode: {
-                type: Sequelize.INTEGER,
-            },
-            runtime: {
-                type: Sequelize.STRING,
-            },
-            is_free: {
-                type: Sequelize.BOOLEAN,
-                allowNull: false,
-                defaultValue: true,
             },
             created_at: {
                 allowNull: false,
@@ -44,6 +34,6 @@ module.exports = {
         });
     },
     async down(queryInterface, Sequelize) {
-        await queryInterface.dropTable('Videos');
+        await queryInterface.dropTable('Carts');
     },
 };

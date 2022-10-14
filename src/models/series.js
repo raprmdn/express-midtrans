@@ -17,6 +17,12 @@ module.exports = (sequelize, DataTypes) => {
                 onDelete: 'NO ACTION',
                 onUpdate: 'NO ACTION',
             });
+            Series.hasMany(models.Cart, {
+                foreignKey: 'series_id',
+                as: 'carts',
+                onDelete: 'CASCADE',
+                onUpdate: 'CASCADE',
+            });
         }
     }
     Series.init({
