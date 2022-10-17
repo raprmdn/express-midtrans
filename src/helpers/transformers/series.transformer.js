@@ -32,4 +32,15 @@ module.exports = {
         runtime: castingRuntimeSeries(series),
         videos: series.videos.map((video) => VideoTransformer(video)),
     }),
+    SeriesCartTransformer: (series) => {
+        const seriesObj = objSeries(series);
+        delete seriesObj.description;
+        delete seriesObj.episodes;
+        delete seriesObj.preview_series;
+        delete seriesObj.source_code;
+        delete seriesObj.is_free;
+        delete seriesObj.created_at;
+
+        return seriesObj;
+    },
 };
