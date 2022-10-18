@@ -17,6 +17,20 @@ module.exports = (sequelize, DataTypes) => {
                 onDelete: 'CASCADE',
                 onUpdate: 'CASCADE',
             });
+
+            User.hasMany(models.Order, {
+                foreignKey: 'user_id',
+                as: 'orders',
+                onDelete: 'CASCADE',
+                onUpdate: 'CASCADE',
+            });
+
+            User.belongsToMany(models.Series, {
+                through: 'purchased_series',
+                foreignKey: 'user_id',
+                onDelete: 'CASCADE',
+                onUpdate: 'CASCADE',
+            });
         }
     }
     User.init({
