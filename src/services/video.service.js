@@ -8,8 +8,11 @@ const { SeriesTransformer } = require('../helpers/transformers/series.transforme
 const { VideoTransformer } = require('../helpers/transformers/video.transformer');
 
 module.exports = {
-    watch: async (slug, episode) => {
+    watch: async (req) => {
         try {
+            const { slug, episode } = req.params;
+            const { user } = req;
+
             let series = await Series.findOne({
                 where: { slug },
                 include: [
@@ -19,11 +22,12 @@ module.exports = {
                 ],
             });
             if (!series) throw notFoundResponse('Series');
+            const hasPurchased = user ? await series.hasUser(user.id) : false;
 
             const video = await Video.findOne({ where: { series_id: series.id, episode } });
             if (!video) throw notFoundResponse('Video');
 
-            const currentVideo = VideoTransformer(video);
+            const currentVideo = VideoTransformer(video, hasPurchased);
             const attributes = {
                 has_next: series.videos.length > episode,
                 has_prev: episode > 1,
@@ -31,12 +35,15 @@ module.exports = {
             attributes.next_episode = attributes.has_next ? +episode + 1 : null;
             attributes.prev_episode = attributes.has_prev ? episode - 1 : null;
             attributes.next_video = attributes.has_next
-                ? VideoTransformer(series.videos.find((v) => v.episode === attributes.next_episode))
+                // eslint-disable-next-line max-len
+                ? VideoTransformer(series.videos.find((v) => v.episode === attributes.next_episode), hasPurchased)
                 : null;
-            const videos = series.videos.map((v) => VideoTransformer(v));
+
+            const videos = series.videos.map((v) => VideoTransformer(v, hasPurchased));
             series = SeriesTransformer(series);
 
             return apiResponse(status.OK, 'OK', 'Get Video successfully', {
+                authenticated: !!user,
                 series,
                 video: {
                     current_video: currentVideo,

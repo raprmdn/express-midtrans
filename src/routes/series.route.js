@@ -7,6 +7,6 @@ const router = express.Router();
 
 router.get('/', SeriesController.index);
 router.get('/:slug', optionalAuthentication, SeriesController.show);
-router.get('/:slug/eps/:episode', VideoController.watch);
+router.get('/:slug/eps/:episode', optionalAuthentication, VideoController.watch);
 
 module.exports = router;
