@@ -44,6 +44,7 @@ module.exports = {
 
             const user = await User.findByPk(id);
             if (!user) throw notFoundResponse('User');
+            if (await user.hasSeries(series)) throw badRequestResponse('You already bought this series');
 
             const seriesInCart = await user.getCarts({ where: { series_id: series.id } });
             if (seriesInCart.length) {
