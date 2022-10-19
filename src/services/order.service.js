@@ -112,6 +112,20 @@ const orderStatusHandling = async (order, user, notification) => {
 };
 
 module.exports = {
+    invoice: async (req) => {
+        try {
+            const { identifier } = req.params;
+            const { user } = req;
+
+            const invoice = await Order.findOne({ where: { identifier } });
+            if (!invoice) return notFoundResponse('Invoice not found');
+            if (invoice.user_id !== user.id) throw apiResponse(status.FORBIDDEN, 'FORBIDDEN', 'You are not allowed to access this invoice');
+
+            return apiResponse(status.OK, 'OK', 'Success get invoice', { invoice });
+        } catch (e) {
+            throw apiResponse(e.code || status.INTERNAL_SERVER_ERROR, e.status || 'INTERNAL_SERVER_ERROR', e.message);
+        }
+    },
     order: async (req) => {
         const t = await sequelize.transaction();
         try {

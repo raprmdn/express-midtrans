@@ -6,5 +6,6 @@ const router = express.Router();
 
 router.post('/', authentication, OrderController.order);
 router.post('/notification', OrderController.notificationHandler);
+router.get('/invoice/:identifier', authentication, OrderController.invoice);
 
 module.exports = router;
