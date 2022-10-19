@@ -1,3 +1,4 @@
+const { Cart } = require('../../models');
 const { rupiahFormat, castingRuntimeSeries } = require('../casts.helper');
 const { VideoTransformer } = require('./video.transformer');
 
@@ -22,15 +23,36 @@ const objSeries = (series) => ({
     created_at: series.created_at,
 });
 
+const hasPurchased = async (series, user) => {
+    if (!user) return false;
+    return !!(await series.hasUser(user.id));
+};
+
+const isExistsInCart = async (series, user) => {
+    if (!user) return false;
+    return !!(await Cart.count({ where: { series_id: series.id, user_id: user.id } }));
+};
+
 module.exports = {
     SeriesTransformer: (series) => ({
         ...objSeries(series),
         runtime: castingRuntimeSeries(series),
     }),
-    SeriesShowTransformer: (series) => ({
+    SeriesShowTransformer: async (series, user) => ({
         ...objSeries(series),
         runtime: castingRuntimeSeries(series),
-        videos: series.videos.map((video) => VideoTransformer(video)),
+        videos: series.videos.map((video) => {
+            const objVideo = VideoTransformer(video);
+            delete objVideo.source;
+
+            return objVideo;
+        }),
+        viewing_status: {
+            is_free: series.is_free,
+            has_purchased: await hasPurchased(series, user),
+            is_exists_in_cart: await isExistsInCart(series, user),
+            is_discount: series.is_discount,
+        },
     }),
     SeriesCartTransformer: (series) => {
         const seriesObj = objSeries(series);

@@ -51,4 +51,20 @@ module.exports = {
             return res.status(e.code).json(e);
         }
     },
+    optionalAuthentication: (req, res, next) => {
+        try {
+            const bearer = req.headers.authorization;
+            if (!bearer) throw unauthorizedResponse();
+
+            const token = bearer.split(' ')[1];
+            if (!token) throw unauthorizedResponse();
+
+            req.user = verifyAccessToken(token);
+
+            next();
+        } catch (e) {
+            req.user = null;
+            next();
+        }
+    },
 };

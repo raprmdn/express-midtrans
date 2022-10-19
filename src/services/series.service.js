@@ -23,8 +23,10 @@ module.exports = {
             throw apiResponse(e.code || status.INTERNAL_SERVER_ERROR, e.status || 'INTERNAL_SERVER_ERROR', e.message);
         }
     },
-    show: async (slug) => {
+    show: async (req) => {
         try {
+            const { user } = req;
+            const { slug } = req.params;
             let series = await Series.findOne({
                 where: { slug },
                 include: [
@@ -35,9 +37,9 @@ module.exports = {
                 ],
                 order: [['videos', 'episode', 'ASC']],
             });
-            series = SeriesShowTransformer(series);
+            series = await SeriesShowTransformer(series, user);
 
-            return apiResponse(status.OK, 'OK', 'Get Series successfully', { series });
+            return apiResponse(status.OK, 'OK', 'Get Series successfully', { authenticated: !!user, series });
         } catch (e) {
             throw apiResponse(e.code || status.INTERNAL_SERVER_ERROR, e.status || 'INTERNAL_SERVER_ERROR', e.message);
         }
