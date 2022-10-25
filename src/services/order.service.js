@@ -1,6 +1,8 @@
 const { StatusCodes: status } = require('http-status-codes');
 const moment = require('moment');
 const crypto = require('crypto');
+const ejs = require('ejs');
+const path = require('path');
 const {
     apiResponse,
     badRequestResponse,
@@ -14,6 +16,8 @@ const {
 const { CartSummaryTransformer } = require('../helpers/transformers/cart.transformer');
 const { SeriesCartTransformer } = require('../helpers/transformers/series.transformer');
 const { paymentRequestPayloads } = require('../utils/midtrans.utils');
+const { sendMail } = require('../config/nodemailer.config');
+const { EmailInvoiceTransformer } = require('../helpers/transformers/invoice.transformer');
 
 const updateOrderTable = async (order, response, t) => {
     let channelName = null;
@@ -91,6 +95,12 @@ const orderStatusHandling = async (order, user, notification) => {
                 status_code: notification.status_code,
                 paid_at: notification.settlement_time,
             });
+            const data = EmailInvoiceTransformer(order, user);
+            const orderTemplates = await ejs.renderFile(path.join(__dirname, '../templates/invoice-template.ejs'), { data });
+            sendMail(user.email, `Invoice: ${order.invoice}`, orderTemplates)
+                .then(() => {
+                    console.info(`Order Invoice sent to ${user.email} successfully`);
+                });
         }
     } else if (notification.transaction_status === 'settlement') {
         await successPurchaseSeries(order, user);
@@ -99,6 +109,12 @@ const orderStatusHandling = async (order, user, notification) => {
             status_code: notification.status_code,
             paid_at: notification.settlement_time,
         });
+        const data = EmailInvoiceTransformer(order, user);
+        const orderTemplates = await ejs.renderFile(path.join(__dirname, '../templates/invoice-template.ejs'), { data });
+        sendMail(user.email, `Invoice: ${order.invoice}`, orderTemplates)
+            .then(() => {
+                console.info(`Order Invoice sent to ${user.email} successfully`);
+            });
     } else if (notification.transaction_status === 'deny') {
         await order.update({
             status: notification.transaction_status,

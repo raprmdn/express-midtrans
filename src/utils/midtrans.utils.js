@@ -44,7 +44,7 @@ const payloads = (type, invoice, summary, user, items, requestChannel) => ({
         gross_amount: summary.sub_total.raw,
     },
     customer_details: {
-        name: user.name,
+        first_name: user.name,
         email: user.email,
     },
     item_details: items,
